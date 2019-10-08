@@ -39,5 +39,16 @@ MUL: '*';
 ASSIGNMENT_OPERATOR: ':=';
 
 //--- PARSER: ---
-
-stylesheet: EOF;
+stylesheet: property+;
+property: variable | element;
+variable: CAPITAL_IDENT + ASSIGNMENT_OPERATOR + expression + SEMICOLON;
+element: selector + OPEN_BRACE + declarations + CLOSE_BRACE;
+selector: ID_IDENT | CLASS_IDENT | LOWER_IDENT;
+declarations: declaration+;
+declaration: LOWER_IDENT + COLON + expression + SEMICOLON | if_expression;
+if_expression: IF + BOX_BRACKET_OPEN + expression + BOX_BRACKET_CLOSE + OPEN_BRACE + declarations + CLOSE_BRACE;
+expression: value | operations;
+operations: operation+;
+operation:  operator + value;
+operator: PLUS | MIN | MUL;
+value: COLOR | PIXELSIZE | CAPITAL_IDENT | TRUE | FALSE | SCALAR;
