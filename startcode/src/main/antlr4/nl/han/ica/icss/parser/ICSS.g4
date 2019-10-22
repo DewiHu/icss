@@ -39,16 +39,14 @@ MUL: '*';
 ASSIGNMENT_OPERATOR: ':=';
 
 //--- PARSER: ---
-stylesheet: property+;
-property: variable | element;
+stylesheet: (variable | stylerule)+?  | EOF;
+stylerule: selector + OPEN_BRACE + (ifclause | declaration)+ CLOSE_BRACE;
 variable: CAPITAL_IDENT + ASSIGNMENT_OPERATOR + expression + SEMICOLON;
-element: selector + OPEN_BRACE + declarations + CLOSE_BRACE;
+declaration: LOWER_IDENT + COLON + expression + SEMICOLON;
 selector: ID_IDENT | CLASS_IDENT | LOWER_IDENT;
-declarations: declaration+;
-declaration: LOWER_IDENT + COLON + expression + SEMICOLON | if_expression;
-if_expression: IF + BOX_BRACKET_OPEN + expression + BOX_BRACKET_CLOSE + OPEN_BRACE + declarations + CLOSE_BRACE;
-expression: value | operations;
-operations: operation+;
-operation:  operator + value;
-operator: PLUS | MIN | MUL;
-value: COLOR | PIXELSIZE | CAPITAL_IDENT | TRUE | FALSE | SCALAR;
+ifclause: IF + BOX_BRACKET_OPEN + expression + BOX_BRACKET_CLOSE + OPEN_BRACE + (ifclause | declaration)+ CLOSE_BRACE;
+expression: multiplyoperation | subtractoperation | addoperation | literal;
+literal: CAPITAL_IDENT | COLOR | PIXELSIZE | TRUE | FALSE | SCALAR | PERCENTAGE;
+multiplyoperation: literal + MUL + literal | literal + MUL + expression;
+subtractoperation: literal + MIN + literal | literal + MIN + expression;
+addoperation: literal + PLUS + literal | literal + PLUS + expression;
