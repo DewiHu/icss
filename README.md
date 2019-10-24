@@ -1,8 +1,12 @@
 # ICSS
-ICSS Compiler assignment voor ASD APP Course
+ICSS Compiler assignment voor ASD APP Course 
+
 Student: Dewi Hu
+
 Studentnummer: 605447
+
 Docent: Dennis Breuker
+
 ## Eisen
 ID   |
 ---- |
