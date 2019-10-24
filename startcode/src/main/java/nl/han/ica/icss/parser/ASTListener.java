@@ -55,8 +55,7 @@ public class ASTListener extends ICSSBaseListener {
     @Override
     public void enterVariable(ICSSParser.VariableContext ctx) {
         VariableAssignment astNode = new VariableAssignment();
-        String variableReference = ctx.CAPITAL_IDENT().toString();
-        variableReference = variableReference.substring(1, variableReference.length() - 1);
+        String variableReference = removeBracket(ctx.CAPITAL_IDENT().toString());
         astNode.addChild(new VariableReference(variableReference));
         currentContainer.peek().addChild(astNode);
         currentContainer.push(astNode);
@@ -70,8 +69,7 @@ public class ASTListener extends ICSSBaseListener {
     @Override
     public void enterDeclaration(ICSSParser.DeclarationContext ctx) {
         Declaration astNode = new Declaration();
-        String propertyName = ctx.LOWER_IDENT().toString();
-        propertyName = propertyName.substring(1, propertyName.length() - 1);
+        String propertyName = removeBracket(ctx.LOWER_IDENT().toString());
         astNode.property = new PropertyName(propertyName);
         currentContainer.peek().addChild(astNode);
         currentContainer.push(astNode);
@@ -85,17 +83,9 @@ public class ASTListener extends ICSSBaseListener {
     @Override
     public void enterSelector(ICSSParser.SelectorContext ctx) {
         Selector astNode = null;
-        if (ctx.LOWER_IDENT() != null) {
-            astNode = new TagSelector(ctx.LOWER_IDENT().toString());
-        }
-
-        if (ctx.ID_IDENT() != null) {
-            astNode = new IdSelector(ctx.ID_IDENT().toString());
-        }
-
-        if (ctx.CLASS_IDENT() != null) {
-            astNode = new ClassSelector(ctx.CLASS_IDENT().toString());
-        }
+        if (ctx.LOWER_IDENT() != null) astNode = new TagSelector(ctx.LOWER_IDENT().getText());
+        if (ctx.ID_IDENT() != null) astNode = new IdSelector(ctx.ID_IDENT().getText());
+        if (ctx.CLASS_IDENT() != null) astNode = new ClassSelector(ctx.CLASS_IDENT().getText());
         currentContainer.peek().addChild(astNode);
         currentContainer.push(astNode);
     }
@@ -108,7 +98,8 @@ public class ASTListener extends ICSSBaseListener {
     @Override
     public void enterIfclause(ICSSParser.IfclauseContext ctx) {
         IfClause astNode = new IfClause();
-        astNode.addChild(new BoolLiteral(ctx.expression().toString()));
+        BoolLiteral condition = new BoolLiteral(ctx.expression().toString());
+        astNode.addChild(condition);
         currentContainer.peek().addChild(astNode);
         currentContainer.push(astNode);
     }
@@ -120,70 +111,22 @@ public class ASTListener extends ICSSBaseListener {
 
     @Override
     public void enterExpression(ICSSParser.ExpressionContext ctx) {
-//        Expression astNode = null;
-//        if (ctx.multiplyoperation() != null) {
-//            astNode = new MultiplyOperation();
-//        }
-//        if (ctx.addoperation() != null) {
-//            astNode = new AddOperation();
-//        }
-//        if (ctx.subtractoperation() != null) {
-//            astNode = new SubtractOperation();
-//        }
-//        if (ctx.literal().CAPITAL_IDENT() != null) {
-//            astNode = new VariableReference(ctx.literal().CAPITAL_IDENT().toString());
-//        }
-//        if (ctx.literal().COLOR() != null) {
-//            astNode = new ColorLiteral(ctx.literal().COLOR().toString());
-//        }
-//        if (ctx.literal().PIXELSIZE() != null) {
-//            astNode = new PixelLiteral(ctx.literal().PIXELSIZE().toString());
-//        }
-//        if (ctx.literal().SCALAR() != null) {
-//            astNode = new ScalarLiteral(ctx.literal().SCALAR().toString());
-//        }
-//        if (ctx.literal().PERCENTAGE() != null) {
-//            astNode = new PercentageLiteral(ctx.literal().PERCENTAGE().toString());
-//        }
-//        if (ctx.literal().TRUE() != null) {
-//            astNode = new BoolLiteral(ctx.literal().TRUE().toString());
-//        }
-//        if (ctx.literal().FALSE() != null) {
-//            astNode = new BoolLiteral(ctx.literal().FALSE().toString());
-//        }
-//        currentContainer.peek().addChild(astNode);
-//        currentContainer.push(astNode);
     }
 
     @Override
     public void exitExpression(ICSSParser.ExpressionContext ctx) {
-//        currentContainer.pop();
     }
 
     @Override
     public void enterLiteral(ICSSParser.LiteralContext ctx) {
         Expression astNode = null;
-        if (ctx.CAPITAL_IDENT() != null) {
-            astNode = new VariableReference(ctx.CAPITAL_IDENT().toString());
-        }
-        if (ctx.COLOR() != null) {
-            astNode = new ColorLiteral(ctx.COLOR().toString());
-        }
-        if (ctx.PIXELSIZE() != null) {
-            astNode = new PixelLiteral(ctx.PIXELSIZE().toString());
-        }
-        if (ctx.SCALAR() != null) {
-            astNode = new ScalarLiteral(ctx.SCALAR().toString());
-        }
-        if (ctx.PERCENTAGE() != null) {
-            astNode = new PercentageLiteral(ctx.PERCENTAGE().toString());
-        }
-        if (ctx.TRUE() != null) {
-            astNode = new BoolLiteral(ctx.TRUE().toString());
-        }
-        if (ctx.FALSE() != null) {
-            astNode = new BoolLiteral(ctx.FALSE().toString());
-        }
+        if (ctx.CAPITAL_IDENT() != null) astNode = new VariableReference(ctx.CAPITAL_IDENT().getText());
+        if (ctx.COLOR() != null) astNode = new ColorLiteral(ctx.COLOR().getText());
+        if (ctx.PIXELSIZE() != null) astNode = new PixelLiteral(ctx.PIXELSIZE().getText());
+        if (ctx.SCALAR() != null) astNode = new ScalarLiteral(ctx.SCALAR().getText());
+        if (ctx.PERCENTAGE() != null) astNode = new PercentageLiteral(ctx.PERCENTAGE().getText());
+        if (ctx.TRUE() != null) astNode = new BoolLiteral(ctx.TRUE().getText());
+        if (ctx.FALSE() != null) astNode = new BoolLiteral(ctx.FALSE().getText());
         currentContainer.peek().addChild(astNode);
         currentContainer.push(astNode);
     }
@@ -231,5 +174,12 @@ public class ASTListener extends ICSSBaseListener {
 
     public AST getAST() {
         return ast;
+    }
+
+    /*
+    Removing brackets for VariableReference;
+    */
+    private String removeBracket(String input) {
+        return input.substring(1, input.length() - 1);
     }
 }

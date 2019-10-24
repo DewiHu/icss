@@ -84,6 +84,7 @@ public class Pipeline implements ANTLRErrorListener {
         parsed = errors.isEmpty();
         checked = transformed = false;
     }
+
     public boolean check() {
             if(ast == null)
                 return false;
@@ -101,6 +102,7 @@ public class Pipeline implements ANTLRErrorListener {
             transformed = false;
             return errors.isEmpty();
     }
+
     public void transform() {
         if(ast == null)
             return;
@@ -110,6 +112,7 @@ public class Pipeline implements ANTLRErrorListener {
 
         transformed = errors.isEmpty();
     }
+
     public String generate() {
         Generator generator = new Generator();
         return generator.generate(ast);
